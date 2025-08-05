@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог шаблонов - TemplateShop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Additional styles for templates page */
+        .templates-header {
+            padding: 8rem 0 4rem;
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+        }
+        
+        .templates-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .templates-header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .filters-section {
+            padding: 3rem 0;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .sort-dropdown {
+            position: relative;
+        }
+        
+        .sort-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.375rem;
+            background: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        .templates-catalog {
+            padding: 4rem 0;
+            background: var(--secondary-color);
+        }
+        
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .template-card-extended {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+        }
+        
+        .template-card-extended:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-large);
+        }
+        
+        .template-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .template-tag {
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .template-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stars {
+            color: #fbbf24;
+        }
+        
+        .rating-count {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .results-count {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .templates-header h1 {
+                font-size: 2rem;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+            
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1><i class="fas fa-code"></i> TemplateShop</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="templates.html" class="active">Шаблоны</a></li>
+                    <li><a href="index.html#about">О нас</a></li>
+                    <li><a href="index.html#contact">Контакты</a></li>
+                    <li><a href="#" class="btn-primary">Войти</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Templates Header -->
+    <section class="templates-header">
+        <div class="container">
+            <h1>Каталог HTML/CSS шаблонов</h1>
+            <p>Найдите идеальный шаблон для вашего проекта среди более чем 500 профессиональных решений</p>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Поиск шаблонов...">
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-category="all">Все</button>
+                    <button class="filter-btn" data-category="business">Бизнес</button>
+                    <button class="filter-btn" data-category="portfolio">Портфолио</button>
+                    <button class="filter-btn" data-category="ecommerce">E-commerce</button>
+                    <button class="filter-btn" data-category="blog">Блоги</button>
+                    <button class="filter-btn" data-category="landing">Landing</button>
+                </div>
+                
+                <div class="sort-dropdown">
+                    <select class="sort-select">
+                        <option value="popular">Популярные</option>
+                        <option value="newest">Новые</option>
+                        <option value="price-low">Цена: по возрастанию</option>
+                        <option value="price-high">Цена: по убыванию</option>
+                        <option value="rating">Рейтинг</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Catalog -->
+    <section class="templates-catalog">
+        <div class="container">
+            <div class="results-count">
+                Найдено <span id="results-count">24</span> шаблона
+            </div>
+            
+            <div class="catalog-grid" id="templates-grid">
+                <!-- Business Templates -->
+                <div class="template-card-extended" data-category="business" data-price="2990" data-rating="4.8">
+                    <div class="template-image">
+                        <div class="template-preview">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                                <div class="preview-button"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Business Pro</h3>
+                        <p>Корпоративный шаблон для бизнеса</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★★</div>
+                            <span class="rating-count">(47 отзывов)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Корпоративный</span>
+                            <span class="template-tag">Адаптивный</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">2 990₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="portfolio" data-price="1990" data-rating="4.9">
+                    <div class="template-image">
+                        <div class="template-preview portfolio">
+                            <div class="preview-header"></div>
+                            <div class="preview-gallery">
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Portfolio Creative</h3>
+                        <p>Креативное портфолио для дизайнеров</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★★</div>
+                            <span class="rating-count">(63 отзыва)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Портфолио</span>
+                            <span class="template-tag">Анимации</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">1 990₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="ecommerce" data-price="3990" data-rating="4.7">
+                    <div class="template-image">
+                        <div class="template-preview ecommerce">
+                            <div class="preview-header"></div>
+                            <div class="preview-products">
+                                <div class="product-item"></div>
+                                <div class="product-item"></div>
+                                <div class="product-item"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Shop Modern</h3>
+                        <p>Современный интернет-магазин</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★☆</div>
+                            <span class="rating-count">(32 отзыва)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">E-commerce</span>
+                            <span class="template-tag">Корзина</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">3 990₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="blog" data-price="1490" data-rating="4.6">
+                    <div class="template-image">
+                        <div class="template-preview blog">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="blog-post">
+                                    <div class="post-image"></div>
+                                    <div class="post-content">
+                                        <div class="post-line"></div>
+                                        <div class="post-line short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Blog Minimal</h3>
+                        <p>Минималистичный блог</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★☆</div>
+                            <span class="rating-count">(28 отзывов)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Блог</span>
+                            <span class="template-tag">Минимализм</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">1 490₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="landing" data-price="2490" data-rating="4.8">
+                    <div class="template-image">
+                        <div class="template-preview">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                                <div class="preview-button"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Landing Pro</h3>
+                        <p>Высококонверсионная посадочная страница</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★★</div>
+                            <span class="rating-count">(89 отзывов)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Landing</span>
+                            <span class="template-tag">Конверсия</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">2 490₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="business" data-price="3490" data-rating="4.9">
+                    <div class="template-image">
+                        <div class="template-preview">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                                <div class="preview-button"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Corporate Elite</h3>
+                        <p>Премиум корпоративный сайт</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★★</div>
+                            <span class="rating-count">(76 отзывов)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Премиум</span>
+                            <span class="template-tag">Корпоративный</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">3 490₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Добавляем больше шаблонов для демонстрации -->
+                <div class="template-card-extended" data-category="portfolio" data-price="2190" data-rating="4.7">
+                    <div class="template-image">
+                        <div class="template-preview portfolio">
+                            <div class="preview-header"></div>
+                            <div class="preview-gallery">
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Artist Portfolio</h3>
+                        <p>Портфолио для художников и фотографов</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★☆</div>
+                            <span class="rating-count">(41 отзыв)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Искусство</span>
+                            <span class="template-tag">Галерея</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">2 190₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card-extended" data-category="blog" data-price="1790" data-rating="4.5">
+                    <div class="template-image">
+                        <div class="template-preview blog">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="blog-post">
+                                    <div class="post-image"></div>
+                                    <div class="post-content">
+                                        <div class="post-line"></div>
+                                        <div class="post-line short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-overlay">
+                            <a href="#" class="btn-preview">Предпросмотр</a>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Tech Blog</h3>
+                        <p>Блог для технологических статей</p>
+                        <div class="template-rating">
+                            <div class="stars">★★★★☆</div>
+                            <span class="rating-count">(35 отзывов)</span>
+                        </div>
+                        <div class="template-tags">
+                            <span class="template-tag">Технологии</span>
+                            <span class="template-tag">Статьи</span>
+                        </div>
+                        <div class="template-price">
+                            <span class="price">1 790₽</span>
+                            <a href="#" class="btn-buy">Купить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" disabled>← Предыдущая</button>
+                <a href="#" class="pagination-btn active">1</a>
+                <a href="#" class="pagination-btn">2</a>
+                <a href="#" class="pagination-btn">3</a>
+                <span>...</span>
+                <a href="#" class="pagination-btn">12</a>
+                <button class="pagination-btn">Следующая →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> TemplateShop</h3>
+                    <p>Лучшие HTML/CSS шаблоны для вашего бизнеса. Создавайте профессиональные сайты быстро и легко.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Категории</h4>
+                    <ul>
+                        <li><a href="#">Бизнес</a></li>
+                        <li><a href="#">Портфолио</a></li>
+                        <li><a href="#">E-commerce</a></li>
+                        <li><a href="#">Блоги</a></li>
+                        <li><a href="#">Landing Page</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Поддержка</h4>
+                    <ul>
+                        <li><a href="#">Документация</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Техподдержка</a></li>
+                        <li><a href="#">Обновления</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Компания</h4>
+                    <ul>
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Карьера</a></li>
+                        <li><a href="#">Блог</a></li>
+                        <li><a href="#">Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TemplateShop. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Templates page specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const sortSelect = document.querySelector('.sort-select');
+            const templatesGrid = document.getElementById('templates-grid');
+            const resultsCount = document.getElementById('results-count');
+            
+            let currentFilter = 'all';
+            let currentSort = 'popular';
+            
+            // Search functionality
+            searchInput.addEventListener('input', filterTemplates);
+            
+            // Category filter
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.category;
+                    filterTemplates();
+                });
+            });
+            
+            // Sort functionality
+            sortSelect.addEventListener('change', function() {
+                currentSort = this.value;
+                sortTemplates();
+            });
+            
+            function filterTemplates() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const templates = templatesGrid.querySelectorAll('.template-card-extended');
+                let visibleCount = 0;
+                
+                templates.forEach(template => {
+                    const category = template.dataset.category;
+                    const title = template.querySelector('h3').textContent.toLowerCase();
+                    const description = template.querySelector('p').textContent.toLowerCase();
+                    
+                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesFilter = currentFilter === 'all' || category === currentFilter;
+                    
+                    if (matchesSearch && matchesFilter) {
+                        template.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        template.style.display = 'none';
+                    }
+                });
+                
+                resultsCount.textContent = visibleCount;
+            }
+            
+            function sortTemplates() {
+                const templates = Array.from(templatesGrid.querySelectorAll('.template-card-extended'));
+                
+                templates.sort((a, b) => {
+                    switch(currentSort) {
+                        case 'price-low':
+                            return parseInt(a.dataset.price) - parseInt(b.dataset.price);
+                        case 'price-high':
+                            return parseInt(b.dataset.price) - parseInt(a.dataset.price);
+                        case 'rating':
+                            return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                        case 'newest':
+                            return Math.random() - 0.5; // Random for demo
+                        default:
+                            return 0;
+                    }
+                });
+                
+                templates.forEach(template => templatesGrid.appendChild(template));
+            }
+        });
+    </script>
+</body>
+</html>
